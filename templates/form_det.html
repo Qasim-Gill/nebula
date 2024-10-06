@@ -1,0 +1,199 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Farmer's Field Information{% endblock %}
+
+{% block style %}
+<style>
+    .nav-link.active {
+        background-color: #000000 !important;
+        color: white !important;
+    }
+
+    .nav-item.nav-link:not(.active),
+    .nav-link:not(.active) {
+        color: rgb(0, 0, 0) !important;
+    }
+
+    .section-title {
+        margin-top: 30px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 10px;
+    }
+
+    .info-item {
+        margin-bottom: 15px;
+    }
+
+    .info-item strong {
+        font-weight: 600;
+    }
+
+    .map-container {
+        max-width: 100%;
+        height: 350px !important;
+        margin-top: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="my-5">
+    <h1 class="text-center">Farmer's Field Information</h1>
+    <div class="row">
+        <div class="mx-auto">
+            <div class="my-5">
+
+                <!-- Tabs for Tasks, Events, Recommendations -->
+                <div class="tabs-section">
+                    <h3 class="text-center mb-4"><i class="fas fa-tasks"></i> Field Management Dashboard</h3>
+                    <ul class="nav nav-tabs" id="managementTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="tasks-tab" data-bs-toggle="tab" data-bs-target="#tasks"
+                                type="button" role="tab" aria-controls="tasks" aria-selected="true">Tasks</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="events-tab" data-bs-toggle="tab" data-bs-target="#events"
+                                type="button" role="tab" aria-controls="events" aria-selected="false">Events</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="recommendations-tab" data-bs-toggle="tab"
+                                data-bs-target="#recommendations" type="button" role="tab"
+                                aria-controls="recommendations" aria-selected="false">Recommendations</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content mt-3">
+                        <div class="tab-pane fade show active" id="tasks" role="tabpanel" aria-labelledby="tasks-tab">
+                            <p>Here are your tasks based on the AI analysis of your field...</p>
+                            <!-- Add tasks dynamically here -->
+                        </div>
+                        <div class="tab-pane fade" id="events" role="tabpanel" aria-labelledby="events-tab">
+                            <p>Upcoming events related to weather, crop health, and more...</p>
+                            <!-- Add events dynamically here -->
+                        </div>
+                        <div class="tab-pane fade" id="recommendations" role="tabpanel"
+                            aria-labelledby="recommendations-tab">
+                            <p>AI-based recommendations for better crop management...</p>
+                            <!-- Add recommendations dynamically here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="my-5">
+
+                <!-- Disease Information Section (Hidden initially) -->
+                <div id="diseaseInfo">
+                    <h2 class="mb-4 text-center text-danger">Disease Detected</h2>
+
+                    <!-- Tabs for Symptoms, Preventions, Solutions -->
+                    <ul class="nav nav-tabs" id="diseaseTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="symptoms-tab" data-bs-toggle="tab"
+                                data-bs-target="#symptoms" type="button" role="tab" aria-controls="symptoms"
+                                aria-selected="true">Symptoms</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="preventions-tab" data-bs-toggle="tab"
+                                data-bs-target="#preventions" type="button" role="tab" aria-controls="preventions"
+                                aria-selected="false">Preventions</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="solutions-tab" data-bs-toggle="tab" data-bs-target="#solutions"
+                                type="button" role="tab" aria-controls="solutions"
+                                aria-selected="false">Solutions</button>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content mt-3">
+                        <div class="tab-pane fade show active" id="symptoms" role="tabpanel"
+                            aria-labelledby="symptoms-tab">
+                            <p>Here are the symptoms of the detected disease...</p>
+                        </div>
+                        <div class="tab-pane fade" id="preventions" role="tabpanel" aria-labelledby="preventions-tab">
+                            <p>Here are the preventions for the detected disease...</p>
+                        </div>
+                        <div class="tab-pane fade" id="solutions" role="tabpanel" aria-labelledby="solutions-tab">
+                            <p>Here are the solutions to treat the detected disease...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alert if no disease detected -->
+                <div id="noDiseaseAlert" class="alert alert-success mt-5" role="alert">
+                    Your plant is disease free!
+                </div>
+            </div>
+            <!-- Display Crop Information -->
+            <div class="section-title">
+                <h4><i class="fas fa-seedling"></i> Crop Information</h4>
+            </div>
+            <div class="info-item">
+                <strong>Crop Type:</strong> {{form_data.crop_type}}
+            </div>
+            <div class="info-item">
+                <strong>Planting Date:</strong> {{form_data.plant_date}}
+            </div>
+            <div class="info-item">
+                <strong>Field Size:</strong> {{form_data.field_size}} Ha
+            </div>
+
+            <!-- Soil and Watering -->
+            <div class="section-title">
+                <h4><i class="fas fa-tint"></i> Soil and Watering</h4>
+            </div>
+            <div class="info-item">
+                <strong>Irrigation Method:</strong> {{form_data.irrigation_method}}
+            </div>
+            <div class="info-item">
+                <strong>Last Irrigation Date:</strong> {{form_data.last_watered}}
+            </div>
+            <div class="info-item">
+                <strong>Soil Type:</strong> {{form_data.soil_type}}
+            </div>
+
+            <!-- Pest and Disease Management -->
+            <div class="section-title">
+                <h4><i class="fas fa-bug"></i> Pest and Disease Management</h4>
+            </div>
+            <div class="info-item">
+                <strong>Pests or Disease Signs:</strong> {{form_data.pest_signs}}
+            </div>
+            <div class="info-item">
+                <strong>Pest Control Method:</strong> {{form_data.pest_control_method}}
+            </div>
+
+            <!-- Weather and Environmental Factors -->
+            <div class="section-title">
+                <h4><i class="fas fa-cloud-sun"></i> Weather and Environmental Factors</h4>
+            </div>
+            <div class="info-item">
+                <strong>Weather Issues:</strong> {{form_data.weather_issues}}
+            </div>
+
+            <!-- Field History and Practices -->
+            <div class="section-title">
+                <h4><i class="fas fa-tractor"></i> Field History and Practices</h4>
+            </div>
+            <div class="info-item">
+                <strong>Crop Rotation Practice:</strong> {{form_data.crop_rotation_practice}}
+            </div>
+
+            <!-- Farmer Demographics -->
+            <div class="section-title">
+                <h4><i class="fas fa-map-marker-alt"></i> Field Location</h4>
+            </div>
+            <div class="info-item">
+                <strong>Address:</strong> {{form_data.field_location}}
+            </div>
+            <div class="map-container">
+                {% set coordinates = form_data.coordinates.split(',') %}
+                <iframe src="https://maps.google.com/maps?q={{ coordinates[0] }},{{ coordinates[1] }}&z=15&output=embed"
+                    width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false"
+                    tabindex="0"></iframe>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+{% endblock %}

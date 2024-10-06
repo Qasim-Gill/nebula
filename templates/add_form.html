@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Add form{% endblock %}
+
+{% block style %}{% endblock %}
+
+{% block content %}
+<div class="my-5">
+    <div class="mx-auto" style="max-width: 400px;">
+        <!-- Show a form here -->
+        <h1 class="mb-4">Farmer's Field Information</h1>
+        <form action="/add_form/{{user.id}}" method="POST">
+            <!-- Crop Information -->
+            <div class="mb-3">
+                <label for="cropType" class="form-label">What type of crop are you growing?</label>
+                <input type="text" class="form-control" id="cropType" name="crop_type"
+                    placeholder="e.g., Wheat, Tomatoes, Corn" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="plantDate" class="form-label">When did you plant the crop?</label>
+                <input type="date" class="form-control" id="plantDate" name="plant_date" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="fieldSize" class="form-label">What is the size of your field? (in Ha)</label>
+                <input type="number" class="form-control" id="fieldSize" name="field_size" placeholder="e.g., 1.2"
+                    step="0.1" required>
+            </div>
+
+            <!-- Soil and Watering -->
+            <div class="mb-3">
+                <label class="form-label">How do you irrigate your field?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="irrigation_method" id="drip"
+                        value="Drip Irrigation" required>
+                    <label class="form-check-label" for="drip">Drip Irrigation</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="irrigation_method" id="flood"
+                        value="Flood Irrigation" required>
+                    <label class="form-check-label" for="flood">Flood Irrigation</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="irrigation_method" id="sprinkler"
+                        value="Sprinklers" required>
+                    <label class="form-check-label" for="sprinkler">Sprinklers</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="lastWatered" class="form-label">When was the last time you irrigated the field?</label>
+                <input type="date" class="form-control" id="lastWatered" name="last_watered">
+            </div>
+
+            <div class="mb-3">
+                <label for="soilType" class="form-label">What is the soil type in your field?</label>
+                <select class="form-select" id="soilType" name="soil_type" required>
+                    <option selected>Select soil type</option>
+                    <option value="Sandy">Sandy</option>
+                    <option value="Loamy">Loamy</option>
+                    <option value="Clay">Clay</option>
+                    <option value="Silt">Silt</option>
+                </select>
+            </div>
+
+            <!-- Pest and Disease Management -->
+            <div class="mb-3">
+                <label class="form-label">Have you noticed any signs of pests or diseases?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pest_signs" id="pestYes" value="Yes" required>
+                    <label class="form-check-label" for="pestYes">Yes</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="pest_signs" id="pestNo" value="No" required>
+                    <label class="form-check-label" for="pestNo">No</label>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="pestControl" class="form-label">What type of pest control methods do you use?</label>
+                <select class="form-select" id="pestControl" name="pest_control_method" required>
+                    <option selected>Select method</option>
+                    <option value="Chemical">Chemical</option>
+                    <option value="Organic">Organic</option>
+                    <option value="None">None</option>
+                </select>
+            </div>
+
+            <!-- Weather and Environmental Factors -->
+            <div class="mb-3">
+                <label class="form-label">Do you face frequent weather-related issues?</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="drought" name="weather_issues[]"
+                        value="Drought">
+                    <label class="form-check-label" for="drought">Drought</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="flooding" name="weather_issues[]"
+                        value="Flooding">
+                    <label class="form-check-label" for="flooding">Flooding</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="pests" name="weather_issues[]" value="Pests">
+                    <label class="form-check-label" for="pests">Pests</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="temperatureChanges" name="weather_issues[]"
+                        value="Temperature Changes">
+                    <label class="form-check-label" for="temperatureChanges">Temperature Changes</label>
+                </div>
+            </div>
+
+            <!-- Field History and Practices -->
+            <div class="mb-3">
+                <label for="cropRotation" class="form-label">What is your crop rotation practice?</label>
+                <select class="form-select" id="cropRotation" name="crop_rotation_practice" required>
+                    <option selected>Select rotation practice</option>
+                    <option value="Annual">Annual</option>
+                    <option value="Seasonal">Seasonal</option>
+                    <option value="None">None</option>
+                </select>
+            </div>
+
+            <!-- Farmer Demographics -->
+            <div class="mb-3">
+                <label for="fieldLocation" class="form-label">Where is your field located? (Select Area from
+                    Map)</label>
+                <div id="map"></div>
+                <input type="text" class="form-control" id="address" name="field_location"
+                    placeholder="Enter your location" required>
+                <input type="text" id="coordinates" name="coordinates" readonly required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-light btn-outline-dark"><i class="fas fa-paper-plane"></i> Create
+                Form</button>
+        </form>
+
+        <!-- end form -->
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Initialize the map and set its view to a selected geographical point
+    var map = L.map('map').setView([30.9000, 75.8573], 8);
+
+    // Set up the OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Feature group to store the drawn items (polygons)
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    // Initialize the draw control and add it to the map
+    var drawControl = new L.Control.Draw({
+        draw: {
+            polygon: true,  // Allow polygon drawing
+            polyline: false,
+            rectangle: false,
+            circle: false,
+            marker: false
+        },
+        edit: {
+            featureGroup: drawnItems // Edit existing polygons
+        }
+    });
+    map.addControl(drawControl);
+
+    // Event listener for polygon creation
+    map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+        drawnItems.addLayer(layer);  // Add the polygon to the map
+
+        var coordinates = layer.getLatLngs()[0];  // Get the coordinates
+        updateCoordinatesAndAddress(coordinates);
+    });
+
+    // Event listener for polygon editing
+    map.on(L.Draw.Event.EDITED, function (event) {
+        event.layers.eachLayer(function (layer) {
+            var coordinates = layer.getLatLngs()[0];  // Get the updated coordinates
+            updateCoordinatesAndAddress(coordinates);
+        });
+    });
+
+    // Event listener for polygon deletion
+    map.on(L.Draw.Event.DELETED, function (event) {
+        // Clear the coordinates and address inputs
+        document.getElementById("coordinates").value = "";
+        document.getElementById("address").value = "";
+    });
+
+    // Function to update coordinates and address
+    function updateCoordinatesAndAddress(coordinates) {
+        // Update coordinates input
+        document.getElementById("coordinates").value = coordinates.map(function (latlng) {
+            return `[${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}]`;
+        }).join(', ');
+
+        // Calculate the centroid of the polygon
+        var latSum = 0;
+        var lngSum = 0;
+        coordinates.forEach(function (latlng) {
+            latSum += latlng.lat;
+            lngSum += latlng.lng;
+        });
+        var lat = latSum / coordinates.length;
+        var lng = lngSum / coordinates.length;
+
+        // Reverse geocode the centroid to get the address
+        getAddress(lat, lng);
+    }
+
+    // Reverse geocoding function using Nominatim (OpenStreetMap)
+    function getAddress(lat, lng) {
+        var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.display_name) {
+                    document.getElementById("address").value = data.display_name;
+                } else {
+                    document.getElementById("address").value = "Address not found";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching address:', error);
+                document.getElementById("address").value = "Error fetching address";
+            });
+    }
+</script>
+
+<script>
+    /*
+    // Initialize the map and set its view to a selected geographical point
+    var map = L.map('map').setView([30.9000, 75.8573], 8);
+
+    // Set up the OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    // Feature group to store the drawn items (polygons)
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    // Initialize the draw control and add it to the map
+    var drawControl = new L.Control.Draw({
+        draw: {
+            polygon: true,  // Allow polygon drawing
+            polyline: false,
+            rectangle: false,
+            circle: false,
+            marker: false
+        },
+        edit: {
+            featureGroup: drawnItems // Edit existing polygons
+        }
+    });
+    map.addControl(drawControl);
+
+    // Event listener for polygon creation
+    map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+        var coordinates = layer.getLatLngs()[0];  // Get the first set of coordinates
+        drawnItems.addLayer(layer);  // Add the polygon to the map
+
+        // Convert coordinates to a readable string and set in the form input
+        document.getElementById("coordinates").value = coordinates.map(function(latlng) {
+            return `[${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}]`;
+        }).join(', ');
+
+        // Reverse geocode the center of the polygon to get the address
+        var lat = coordinates[0].lat;
+        var lng = coordinates[0].lng;
+        getAddress(lat, lng);  // Call reverse geocoding function
+    });
+    // Event listener for polygon deletion
+    map.on(L.Draw.Event.DELETED, function (event) {
+        // Clear the coordinates and address when the polygon is deleted
+        document.getElementById("coordinates").value = "";
+        document.getElementById("address").value = "";
+    });
+
+    // Reverse geocoding function using Nominatim (OpenStreetMap)
+    function getAddress(lat, lng) {
+        var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.display_name) {
+                    document.getElementById("address").value = data.display_name;
+                } else {
+                    document.getElementById("address").value = "Address not found";
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching address:', error);
+                document.getElementById("address").value = "Error fetching address";
+            });
+    }
+            */
+</script>
+{% endblock %}

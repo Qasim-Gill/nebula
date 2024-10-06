@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Field Information and Questions{% endblock %}
+
+{% block content %}
+<div class="my-5">
+    <!-- Form Section -->
+    <h1 class="mb-4 text-center">Field Information and Questions</h1>
+    <form>
+        <!-- Crop Information -->
+        <div class="mb-3">
+            <label for="cropType" class="form-label">Crop Type</label>
+            <input type="text" class="form-control" id="cropType" placeholder="e.g., Wheat, Corn, Tomatoes">
+        </div>
+        <div class="mb-3">
+            <label for="plantDate" class="form-label">Planting Date</label>
+            <input type="date" class="form-control" id="plantDate">
+        </div>
+        <div class="mb-3">
+            <label for="fieldSize" class="form-label">Field Size (in Ha)</label>
+            <input type="number" class="form-control" id="fieldSize" placeholder="e.g., 1.5">
+        </div>
+
+        <!-- Soil and Irrigation Info -->
+        <div class="mb-3">
+            <label class="form-label">Irrigation Method</label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="irrigation" id="drip" value="Drip">
+                <label class="form-check-label" for="drip">Drip Irrigation</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="irrigation" id="flood" value="Flood">
+                <label class="form-check-label" for="flood">Flood Irrigation</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="irrigation" id="sprinkler" value="Sprinkler">
+                <label class="form-check-label" for="sprinkler">Sprinklers</label>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label for="lastWatered" class="form-label">Last Irrigation Date</label>
+            <input type="date" class="form-control" id="lastWatered">
+        </div>
+
+        <!-- Soil Type -->
+        <div class="mb-3">
+            <label for="soilType" class="form-label">Soil Type</label>
+            <select class="form-select" id="soilType">
+                <option selected>Select soil type</option>
+                <option value="Sandy">Sandy</option>
+                <option value="Loamy">Loamy</option>
+                <option value="Clay">Clay</option>
+                <option value="Silt">Silt</option>
+            </select>
+        </div>
+
+        <!-- Weather and Pests -->
+        <div class="mb-3">
+            <label for="weatherIssues" class="form-label">Weather Issues</label>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="drought" value="Drought">
+                <label class="form-check-label" for="drought">Drought</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="flooding" value="Flooding">
+                <label class="form-check-label" for="flooding">Flooding</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="temperature" value="Temperature">
+                <label class="form-check-label" for="temperature">Temperature</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="pests" value="Pests">
+                <label class="form-check-label" for="pests">Pests</label>
+            </div>
+        </div>
+
+        <!-- Field Location -->
+        <div class="mb-3">
+            <label for="fieldLocation" class="form-label">Field Location (Draw on Map)</label>
+            <div id="map"></div>
+            <input type="text" class="form-control mt-2" id="address" placeholder="Location will be automatically filled"
+                readonly required>
+            <input type="hidden" id="coordinates" class="form-control mt-2" readonly>
+        </div>
+
+        <!-- Ask Question -->
+        <div class="mb-3">
+            <label for="question" class="form-label">Ask a Question</label>
+            <textarea class="form-control" id="question" rows="3" required></textarea>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-light btn-outline-dark w-100">
+            <i class="fas fa-paper-plane"></i> Submit
+        </button>
+    </form>
+
+    <!-- AI Model Response Section -->
+    <div id="aiResponse" class="mt-5" style="margin-top: 30px;">
+        <h3 class="text-center">AI Model Response</h3>
+        <div class="p-4 border rounded" id="responseOutput">
+            <!-- This is where the AI's response will be displayed -->
+            <p class="text-muted">Waiting for response...</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Initialize the map and set its view to a selected geographical point
+        var map = L.map('map').setView([30.9000, 75.8573], 8);
+
+        // Set up the OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Feature group to store the drawn items (polygons)
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        // Initialize the draw control and add it to the map
+        var drawControl = new L.Control.Draw({
+            draw: {
+                polygon: true,  // Allow polygon drawing
+                polyline: false,
+                rectangle: false,
+                circle: false,
+                marker: false
+            },
+            edit: {
+                featureGroup: drawnItems // Edit existing polygons
+            }
+        });
+        map.addControl(drawControl);
+
+        // Event listener for polygon creation
+        map.on(L.Draw.Event.CREATED, function (event) {
+            var layer = event.layer;
+            drawnItems.addLayer(layer);  // Add the polygon to the map
+
+            var coordinates = layer.getLatLngs()[0];  // Get the coordinates
+            updateCoordinatesAndAddress(coordinates);
+        });
+
+        // Event listener for polygon editing
+        map.on(L.Draw.Event.EDITED, function (event) {
+            event.layers.eachLayer(function (layer) {
+                var coordinates = layer.getLatLngs()[0];  // Get the updated coordinates
+                updateCoordinatesAndAddress(coordinates);
+            });
+        });
+
+        // Event listener for polygon deletion
+        map.on(L.Draw.Event.DELETED, function (event) {
+            // Clear the coordinates and address inputs
+            document.getElementById("coordinates").value = "";
+            document.getElementById("address").value = "";
+        });
+
+        // Function to update coordinates and address
+        function updateCoordinatesAndAddress(coordinates) {
+            // Update coordinates input
+            document.getElementById("coordinates").value = coordinates.map(function (latlng) {
+                return `[${latlng.lat.toFixed(4)}, ${latlng.lng.toFixed(4)}]`;
+            }).join(', ');
+
+            // Calculate the centroid of the polygon
+            var latSum = 0;
+            var lngSum = 0;
+            coordinates.forEach(function (latlng) {
+                latSum += latlng.lat;
+                lngSum += latlng.lng;
+            });
+            var lat = latSum / coordinates.length;
+            var lng = lngSum / coordinates.length;
+
+            // Reverse geocode the centroid to get the address
+            getAddress(lat, lng);
+        }
+
+        // Reverse geocoding function using Nominatim (OpenStreetMap)
+        function getAddress(lat, lng) {
+            var url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`;
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.display_name) {
+                        document.getElementById("address").value = data.display_name;
+                    } else {
+                        document.getElementById("address").value = "Address not found";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching address:', error);
+                    document.getElementById("address").value = "Error fetching address";
+                });
+        }
+
+    });
+</script>
+{% endblock %}

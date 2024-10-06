@@ -1,0 +1,12 @@
+# Ignore virtual environments
+env/
+
+# Ignore Python cache
+__pycache__/
+
+# Ignore SQLite database (if you don't want to upload it)
+instance/*.db
+
+# Ignore any other unnecessary files
+*.pyc
+*.pyo

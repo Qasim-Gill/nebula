@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Events{% endblock %}
+
+{% block content %}
+    <h2 class="text-center mb-3">Events</h2>
+    <div id="calendar"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+
+        // Define events with long descriptions
+        var events = [
+            {
+                title: 'Water Tomatoes',
+                start: '2024-09-15',
+                description: 'This is a long description for Event 1. It will show up in the tooltip.'
+            },
+            {
+                title: 'Cutting Mango',
+                start: '2024-09-15',
+                description: 'Qasim'
+            },
+            {
+                title: 'Spray Ratkiller',
+                start: '2024-09-16',
+                description: 'This is another long description for Event 2.'
+            },
+            {
+                title: 'Harvest',
+                start: '2024-09-17',
+                description: 'Detailed information about Event 3 goes here.'
+            }
+        ];
+
+        // Initialize the calendar
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: events,
+            eventDidMount: function (info) {
+                // Add Bootstrap tooltip to the event element
+                var tooltip = new bootstrap.Tooltip(info.el, {
+                    title: info.event.extendedProps.description,
+                    placement: 'top',
+                    trigger: 'hover',
+                    container: 'body'
+                });
+            },
+            // dateClick: function (info) {
+            //     alert('Clicked on: ' + info.dateStr);
+            // }
+        });
+
+        // Render the calendar
+        calendar.render();
+    });
+</script>
+
+{% endblock %}

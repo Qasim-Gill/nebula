@@ -1,0 +1,31 @@
+<header class="p-3 mb-3 border-bottom">
+    <div class="container">
+        <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+            <a href="/home/{{user.id}}" class="navbar-brand bg-dark text-white p-2 rounded-end-5">
+                <i class="fas fa-seedling"></i> Garden Guardian
+            </a>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+                <li><a href="/events/{{user.id}}" class="nav-link px-2 link-body-emphasis">Events</a></li>
+                <li><a href="/tasks/{{user.id}}" class="nav-link px-2 link-body-emphasis">Tasks</a></li>
+                <li><a href="/forms/{{user.id}}" class="nav-link px-2 link-body-emphasis">Forms</a></li>
+                <li><a href="/plant_care" class="nav-link px-2 link-body-emphasis">Plant Care AI</a></li>
+                <li><a href="/disease_checker" class="nav-link px-2 link-body-emphasis">Disease Checker</a></li>
+            </ul>
+
+            <div class="dropdown text-end">
+                <a href="#"
+                    class="d-block link-body-emphasis text-decoration-none dropdown-toggle p-2 bg-dark text-white rounded-start-pill"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Welcome, {{user.first_name}}
+                </a>
+                <ul class="dropdown-menu text-small">
+                    <li><a class="dropdown-item" href="/profile/{{user.id}}">Profile</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="/login">Sign out</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</header>

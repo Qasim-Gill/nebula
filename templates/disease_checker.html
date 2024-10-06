@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block page_title %}Disease Checker{% endblock %}
+
+{% block style %}
+<style>
+    .nav-link,
+    a {
+        color: rgba(0, 0, 0) !important;
+    }
+
+    .nav-link.active {
+        background-color: #000000 !important;
+        color: white !important;
+    }
+
+    .nav-item.nav-link:not(.active),
+    .nav-link:not(.active) {
+        color: rgb(0, 0, 0) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Main Content -->
+<div class="mt-5 mx-auto">
+    <h3 class="text-center mb-4">Plant Disease Checker</h3>
+
+    <!-- Image Upload Form -->
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="plantImage" class="form-label">Upload an image of your plant</label>
+            <input class="form-control" type="file" id="plantImage" accept="image/*">
+        </div>
+        <button type="submit" class="btn btn-light btn-outline-dark"><i class="fa-solid fa-upload"></i> Upload
+            Image</button>
+    </form>
+
+    <!-- Disease Information Section (Hidden initially) -->
+    <div id="diseaseInfo" class="mt-5 d-none">
+        <h2 class="mb-4 text-center text-danger">Disease Detected</h2>
+
+        <!-- Tabs for Symptoms, Preventions, Solutions -->
+        <ul class="nav nav-tabs" id="diseaseTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="symptoms-tab" data-bs-toggle="tab" data-bs-target="#symptoms"
+                    type="button" role="tab" aria-controls="symptoms" aria-selected="true">Symptoms</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="preventions-tab" data-bs-toggle="tab" data-bs-target="#preventions"
+                    type="button" role="tab" aria-controls="preventions" aria-selected="false">Preventions</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="solutions-tab" data-bs-toggle="tab" data-bs-target="#solutions"
+                    type="button" role="tab" aria-controls="solutions" aria-selected="false">Solutions</button>
+            </li>
+        </ul>
+
+        <div class="tab-content mt-3">
+            <div class="tab-pane fade show active" id="symptoms" role="tabpanel" aria-labelledby="symptoms-tab">
+                <p>Here are the symptoms of the detected disease...</p>
+            </div>
+            <div class="tab-pane fade" id="preventions" role="tabpanel" aria-labelledby="preventions-tab">
+                <p>Here are the preventions for the detected disease...</p>
+            </div>
+            <div class="tab-pane fade" id="solutions" role="tabpanel" aria-labelledby="solutions-tab">
+                <p>Here are the solutions to treat the detected disease...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert if no disease detected -->
+    <div id="noDiseaseAlert" class="alert alert-success mt-5 d-none" role="alert">
+        Your plant is disease free!
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.getElementById('uploadForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Simulate AI detection result
+        var diseaseDetected = true; // Set to false if no disease is detected
+
+        if (diseaseDetected) {
+            // Show disease information and hide no disease alert
+            document.getElementById('diseaseInfo').classList.remove('d-none');
+            document.getElementById('noDiseaseAlert').classList.add('d-none');
+        } else {
+            // Show no disease alert and hide disease information
+            document.getElementById('diseaseInfo').classList.add('d-none');
+            document.getElementById('noDiseaseAlert').classList.remove('d-none');
+        }
+    });
+</script>
+{% endblock %}
